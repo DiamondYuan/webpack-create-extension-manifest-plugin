@@ -1,0 +1,9 @@
+{
+  "name": "webpack-create-extension-manifest-plugin",
+  "version": "0.0.0",
+  "description": "create manifest.json for browser extension",
+  "main": "index.js",
+  "repository": "git@github.com:DiamondYuan/webpack-create-extension-manifest-plugin.git",
+  "author": "DiamondYuan <admin@diamondyuan.com>",
+  "license": "MIT"
+}
