@@ -1,53 +1,41 @@
-const fs = require("fs");
+const fs = require("mz/fs");
 const path = require("path");
 
-const writeFile = (path, data, opts = "utf8") =>
-  new Promise((res, rej) => {
-    fs.writeFile(path, data, opts, err => {
-      if (err) rej(err);
-      else res();
-    });
-  });
-
-const readFile = (path, opts = "utf8") =>
-  new Promise((res, rej) => {
-    fs.readFile(path, opts, (err, data) => {
-      if (err) rej(err);
-      else res(data);
-    });
-  });
-
-const mkdirsSync = dirname => {
+const mkdir = async dirname => {
+  //console.log(dirname);
   if (fs.existsSync(dirname)) {
     return true;
   } else {
-    if (mkdirsSync(path.dirname(dirname))) {
-      fs.mkdirSync(dirname);
+    if (mkdir(path.dirname(dirname))) {
+      fs.mkdir(dirname);
       return true;
     }
   }
 };
 
-class ChromeManifestPlugin {
-  constructor(options) {
-    this.options = options;
+class WebpackCreateExtensionManifestPlugin {
+  constructor({ root = process.cwd(), key = "manifest", output }) {
+    this.options = { root, key, output };
   }
 
   apply(compiler) {
     compiler.hooks.done.tapPromise(
-      "ChromeManifestPlugin",
-      async compilation => {
+      "WebpackCreateExtensionManifestPlugin",
+      async () => {
+        const { output, key, root } = this.options;
         const packageJson = JSON.parse(
-          await readFile(this.options.packageJson)
+          await fs.readFile(path.resolve(root, "package.json"), {
+            encoding: "utf-8"
+          })
         );
-        const manifest = packageJson.chrome;
-        manifest.version = packageJson.version;
-        manifest.description = packageJson.description;
-        mkdirsSync(path.dirname(this.options.out));
-        await writeFile(this.options.out, JSON.stringify(manifest));
+        const { name, version, description } = packageJson;
+        let manifest = packageJson[key] || {};
+        manifest = Object.assign(manifest, { name, version, description });
+        mkdir(path.dirname(output));
+        await fs.writeFile(output, JSON.stringify(manifest, null, 2));
       }
     );
   }
 }
 
-module.exports = ChromeManifestPlugin;
+module.exports = WebpackCreateExtensionManifestPlugin;

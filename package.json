@@ -15,7 +15,16 @@
     }
   },
   "devDependencies": {
+    "@diamondyuan/eslint-config-javascript": "^2.0.0",
+    "babel-eslint": "^10.0.1",
     "commitizen": "^3.0.7",
-    "cz-conventional-changelog": "^2.1.0"
+    "cz-conventional-changelog": "^2.1.0",
+    "eslint": "^5.15.1"
+  },
+  "files": [
+    "index.js"
+  ],
+  "dependencies": {
+    "mz": "^2.7.0"
   }
 }
